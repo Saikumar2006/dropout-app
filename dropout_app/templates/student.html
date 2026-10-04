@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ s.name }}{% endblock %}
+{% block content %}
+<h1>{{ s.name }} <span class="badge {{ s.risk_level }}">{{ s.risk_level }} risk</span></h1>
+<p class="sub">Roll no {{ s.roll_no }} &middot; Class {{ s.class_name }} &middot; Last updated {{ s.updated_at }}</p>
+
+<div class="panel">
+  <strong>Why this risk level</strong>
+  <ul class="reasons">{% for r in s.reasons.split('; ') %}<li>{{ r }}</li>{% endfor %}</ul>
+  <p class="muted">This is a support signal, not a decision. A faculty member or counsellor should review it before taking action.</p>
+</div>
+
+<h2>Student details</h2>
+<div class="table-wrap"><table>
+  <tr><th>Attendance</th><td>{{ '%.0f'|format(s.attendance) }}%</td><th>Average marks</th><td>{{ '%.0f'|format(s.avg_marks) }}</td></tr>
+  <tr><th>Backlogs</th><td>{{ s.backlogs }}</td><th>Fee pending</th><td>{{ 'Yes' if s.fee_pending else 'No' }}</td></tr>
+  <tr><th>Income level</th><td>{{ s.income_level|capitalize }}</td><th>Entrance score</th><td>{{ '%.0f'|format(s.entrance_score) }}</td></tr>
+</table></div>
+
+<h2>Risk history</h2>
+<div class="table-wrap"><table>
+  <thead><tr><th>Date</th><th>Risk</th><th>Score (0 to 1)</th><th>Reasons</th></tr></thead>
+  <tbody>{% for h in hist %}
+    <tr><td>{{ h.created_at }}</td><td><span class="badge {{ h.risk_level }}">{{ h.risk_level }}</span></td><td>{{ h.risk_score }}</td><td>{{ h.reasons }}</td></tr>
+  {% endfor %}</tbody>
+</table></div>
+
+<div class="row">
+  <a class="btn light" href="{{ url_for('dashboard') }}">Back to dashboard</a>
+  <a class="btn light" href="{{ url_for('add_student') }}?roll_no={{ s.roll_no }}">Update this student</a>
+  {% if session.role == 'admin' %}
+  <form method="post" action="{{ url_for('delete_student', sid=s.id) }}" onsubmit="return confirm('Delete this student and their history?')">
+    <button class="danger" type="submit">Delete student</button></form>
+  {% endif %}
+</div>
+{% endblock %}

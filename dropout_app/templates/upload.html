@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Upload file{% endblock %}
+{% block content %}
+<h1>Upload student records</h1>
+<p class="sub">Upload a CSV or Excel file to add or update many students at once.</p>
+<form method="post" enctype="multipart/form-data" class="panel">
+  <label for="file">File (.csv or .xlsx)</label>
+  <input id="file" name="file" type="file" accept=".csv,.xlsx,.xls" required>
+  <div class="row"><button type="submit">Upload and calculate risk</button></div>
+</form>
+<h2>Required columns</h2>
+<p>The first row must contain these column names:</p>
+<p><code>{{ columns|join(', ') }}</code></p>
+<ul>
+  <li><code>fee_pending</code>: Yes or No</li>
+  <li><code>income_level</code>: low, medium or high</li>
+  <li><code>attendance</code>, <code>avg_marks</code> and <code>entrance_score</code>: numbers from 0 to 100</li>
+</ul>
+<p>Rows with problems are skipped and listed after the upload. <a href="{{ url_for('static', filename='sample_students.csv') }}" download>Download a sample file</a>.</p>
+{% endblock %}

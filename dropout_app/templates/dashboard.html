@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="sub">Students sorted by dropout risk, highest first.</p>
+
+{% if alerts %}
+<div class="alerts">
+  <strong>New alerts ({{ alerts|length }})</strong>
+  <ul>{% for a in alerts %}
+    <li><a href="{{ url_for('student', sid=a.student_id) }}">{{ a.name }}</a>: {{ a.message }} <span class="muted">({{ a.created_at }})</span></li>
+  {% endfor %}</ul>
+  <form method="post" action="{{ url_for('clear_alerts') }}"><button class="btn light" type="submit">Mark all as read</button></form>
+</div>
+{% endif %}
+
+<div class="stats">
+  <div class="stat"><b>{{ (counts.get('Low',0) + counts.get('Medium',0) + counts.get('High',0)) }}</b>Total students</div>
+  <div class="stat High"><b>{{ counts.get('High', 0) }}</b>High risk</div>
+  <div class="stat Medium"><b>{{ counts.get('Medium', 0) }}</b>Medium risk</div>
+  <div class="stat Low"><b>{{ counts.get('Low', 0) }}</b>Low risk</div>
+</div>
+
+<form class="filters" method="get">
+  <div><label for="q">Search</label><input id="q" name="q" value="{{ f.get('q','') }}" placeholder="Name or roll no"></div>
+  <div><label for="class_name">Class</label>
+    <select id="class_name" name="class_name"><option value="">All</option>
+      {% for c in classes %}<option {{ 'selected' if f.get('class_name')==c }}>{{ c }}</option>{% endfor %}
+    </select></div>
+  <div><label for="risk">Risk level</label>
+    <select id="risk" name="risk"><option value="">All</option>
+      {% for r in ['High','Medium','Low'] %}<option {{ 'selected' if f.get('risk')==r }}>{{ r }}</option>{% endfor %}
+    </select></div>
+  <button type="submit">Apply filters</button>
+  <a class="btn light" href="{{ url_for('export', **f) }}">Export report (CSV)</a>
+</form>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Name</th><th>Roll no</th><th>Class</th><th>Attendance</th><th>Avg marks</th><th>Risk</th><th>Main reasons</th></tr></thead>
+  <tbody>
+  {% for s in students %}
+    <tr>
+      <td><a href="{{ url_for('student', sid=s.id) }}">{{ s.name }}</a></td>
+      <td>{{ s.roll_no }}</td><td>{{ s.class_name }}</td>
+      <td>{{ '%.0f'|format(s.attendance) }}%</td><td>{{ '%.0f'|format(s.avg_marks) }}</td>
+      <td><span class="badge {{ s.risk_level }}">{{ s.risk_level }}</span></td>
+      <td>{{ s.reasons }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7">No students match. <a href="{{ url_for('add_student') }}">Add a student</a> or <a href="{{ url_for('upload') }}">upload a file</a>.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

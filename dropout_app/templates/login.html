@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="login panel">
+  <h1>Log in</h1>
+  <p class="sub">Only authorized faculty and admins can view student data.</p>
+  <form method="post">
+    <label for="username">Username</label>
+    <input id="username" name="username" required autofocus>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" required>
+    <button type="submit">Log in</button>
+  </form>
+  <p class="muted" style="margin-top:16px">Demo logins: <code>admin / admin123</code> or <code>faculty / faculty123</code></p>
+</div>
+{% endblock %}

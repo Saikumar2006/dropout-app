@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Add student{% endblock %}
+{% block content %}
+<h1>Add or update a student</h1>
+<p class="sub">Saving calculates the risk level straight away. Using an existing roll number updates that student.</p>
+<form method="post" class="panel">
+  <div class="grid">
+    <div><label for="roll_no">Roll no</label><input id="roll_no" name="roll_no" value="{{ v.get('roll_no','') }}" required></div>
+    <div><label for="name">Name</label><input id="name" name="name" value="{{ v.get('name','') }}" required></div>
+    <div><label for="class_name">Class</label><input id="class_name" name="class_name" value="{{ v.get('class_name','') }}" placeholder="e.g. BCA-3" required></div>
+    <div><label for="attendance">Attendance (%)</label><input id="attendance" name="attendance" type="number" min="0" max="100" step="any" value="{{ v.get('attendance','') }}" required></div>
+    <div><label for="avg_marks">Average marks (%)</label><input id="avg_marks" name="avg_marks" type="number" min="0" max="100" step="any" value="{{ v.get('avg_marks','') }}" required></div>
+    <div><label for="backlogs">Backlog subjects</label><input id="backlogs" name="backlogs" type="number" min="0" max="50" value="{{ v.get('backlogs', 0) }}" required></div>
+    <div><label for="entrance_score">Entrance score</label><input id="entrance_score" name="entrance_score" type="number" min="0" max="100" step="any" value="{{ v.get('entrance_score','') }}" required></div>
+    <div><label for="fee_pending">Fee pending?</label>
+      <select id="fee_pending" name="fee_pending">
+        <option value="no" {{ 'selected' if v.get('fee_pending','no')|string|lower in ['no','0','false'] }}>No</option>
+        <option value="yes" {{ 'selected' if v.get('fee_pending','')|string|lower in ['yes','1','true'] }}>Yes</option>
+      </select></div>
+    <div><label for="income_level">Family income level</label>
+      <select id="income_level" name="income_level">
+        {% for o in ['low','medium','high'] %}<option value="{{ o }}" {{ 'selected' if v.get('income_level','medium')==o }}>{{ o|capitalize }}</option>{% endfor %}
+      </select></div>
+  </div>
+  <div class="row"><button type="submit">Save and calculate risk</button>
+  <a class="btn light" href="{{ url_for('dashboard') }}">Cancel</a></div>
+</form>
+{% endblock %}
